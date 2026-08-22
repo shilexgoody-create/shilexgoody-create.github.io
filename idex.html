@@ -1,12 +1,118 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Personal Website</title>
-</head>
-<body style="font-family: sans-serif; text-align: center; padding-top: 50px;">
-    <h1>Hello, World!</h1>
-    <p>My website is live on GitHub Pages.</p>
+<div class="card">
+    <div class="small">A SPECIAL DAY FOR A SPECIAL PERSON</div>
+
+    <h1>
+      HAPPY BIRTHDAY
+      <span class="name">MEL</span>
+    </h1>
+
+    <div class="message">
+      Best duo ever 💙💙
+    </div>
+
+    <div class="hearts">
+      💙 ✨ 💙
+    </div>
+  </div>
+
+  <!-- Floating hearts -->
+  <div class="heart" style="left:5%; animation-duration:8s;">💙</div>
+  <div class="heart" style="left:15%; animation-duration:11s; animation-delay:2s;">✨</div>
+  <div class="heart" style="left:25%; animation-duration:9s; animation-delay:1s;">💙</div>
+  <div class="heart" style="left:40%; animation-duration:12s; animation-delay:3s;">💙</div>
+  <div class="heart" style="left:55%; animation-duration:8s; animation-delay:2s;">✨</div>
+  <div class="heart" style="left:70%; animation-duration:10s;">💙</div>
+  <div class="heart" style="left:85%; animation-duration:13s; animation-delay:1s;">💙</div>
+  <div class="heart" style="left:95%; animation-duration:9s; animation-delay:4s;">✨</div>
+
+  <button id="musicBtn">🎵 Play Music</button>
+
+  <script>
+    let audioContext;
+    let playing = false;
+    let timer;
+
+    const button = document.getElementById("musicBtn");
+
+    // A soft original melody made with Web Audio API
+    const melody = [
+      [261.63, 0.35], // C
+      [329.63, 0.35], // E
+      [392.00, 0.45], // G
+      [329.63, 0.35], // E
+      [293.66, 0.35], // D
+      [349.23, 0.35], // F
+      [440.00, 0.45], // A
+      [392.00, 0.55], // G
+
+      [261.63, 0.35],
+      [329.63, 0.35],
+      [392.00, 0.45],
+      [523.25, 0.55], // High C
+      [493.88, 0.35],
+      [440.00, 0.35],
+      [392.00, 0.65]
+    ];
+
+    function playNote(frequency, duration) {
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+
+      oscillator.type = "sine";
+      oscillator.frequency.value = frequency;
+
+      oscillator.connect(gain);
+      gain.connect(audioContext.destination);
+
+      const now = audioContext.currentTime;
+
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(0.12, now + 0.03);
+      gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        now + duration
+      );
+
+      oscillator.start(now);
+      oscillator.stop(now + duration);
+    }
+
+    function playMelody() {
+      let delay = 0;
+
+      melody.forEach(([frequency, duration]) => {
+        setTimeout(() => {
+          if (playing) {
+            playNote(frequency, duration);
+          }
+        }, delay * 1000);
+
+        delay += duration + 0.08;
+      });
+
+      timer = setTimeout(playMelody, delay * 1000);
+    }
+
+    button.addEventListener("click", () => {
+      if (!playing) {
+        audioContext = new (window.AudioContext ||
+          window.webkitAudioContext)();
+
+        playing = true;
+        button.textContent = "🔊 Music On";
+        playMelody();
+      } else {
+        playing = false;
+        clearTimeout(timer);
+
+        if (audioContext) {
+          audioContext.close();
+        }
+
+        button.textContent = "🎵 Play Music";
+      }
+    });
+  </script>
+
 </body>
 </html>
